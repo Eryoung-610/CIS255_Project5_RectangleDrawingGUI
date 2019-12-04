@@ -35,6 +35,7 @@ public class RectangleDrawingGUI extends Application {
     private RadioButton red,yellow,blue,thin,thick;
     private Button clear;
     private CheckBox fillCheckBox;
+    private int countRectangles = 0;
 
     public void start(Stage stage) {
 
@@ -44,17 +45,13 @@ public class RectangleDrawingGUI extends Application {
         Pane pane = new Pane();
         pane.setStyle("-fx-border-color : black");
         pane.setPadding(new Insets(10,10,10,10));
-        pane.setOnMouseMoved(this::handleMouseMotion);
 
         borderPane.setCenter(pane);
 
         //COLOR BUTTONS
         red = new RadioButton("Red");
-        red.setOnAction(this::handleButton);
         yellow = new RadioButton("Yellow");
-        yellow.setOnAction(this::handleButton);
         blue = new RadioButton("Blue");
-        blue.setOnAction(this::handleButton);
 
         //COLOR BUTTON TOGGLE GROUP
         ToggleGroup colorGroup = new ToggleGroup();
@@ -64,9 +61,7 @@ public class RectangleDrawingGUI extends Application {
 
         //BORDER BUTTONS
         thin = new RadioButton("Thin Border");
-        thin.setOnAction(this::handleButton);
         thick = new RadioButton("Thick Border");
-        thick.setOnAction(this::handleButton);
 
         //BORDER BUTTON TOGGLE GROUP
         ToggleGroup borderGroup = new ToggleGroup();
@@ -75,11 +70,9 @@ public class RectangleDrawingGUI extends Application {
 
         //FILLED IN BUTTON
         fillCheckBox = new CheckBox("Fill");
-        fillCheckBox.setOnAction(this::handleButton);
 
         //Clear Button
         clear = new Button("Clear");
-        clear.setOnAction(this::handleButton);
 
         //Color and width Groups
         Group colorButtons = new Group();
@@ -122,16 +115,20 @@ public class RectangleDrawingGUI extends Application {
             @Override
             public void handle(MouseEvent event) {
 
-                if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
+                if(event.getEventType() == MouseEvent.MOUSE_PRESSED) {
                     firstX = event.getX();
                     firstY = event.getY();
                     initializeRectangle(event, anchorPane);
 
                 }
-                if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+                if(event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
                     translateRectangle(event);
                     firstX = event.getX();
                     firstY = event.getY();
+                }
+
+                if(event.getEventType() == MouseEvent.MOUSE_RELEASED) {
+                    countRectangles++;
                 }
             }
         });
@@ -142,21 +139,26 @@ public class RectangleDrawingGUI extends Application {
 
 
     }
-    public void initializeRectangle(MouseEvent event, AnchorPane canvasGroup) {
+    public void initializeRectangle(MouseEvent event, AnchorPane anchorPane) {
         customRectangle = new Rectangle(0, 0, 0, 0); // or just set the actual X and Y from the start
         customRectangle.relocate(event.getX(), event.getY());
 
         Color currentColor = Color.TRANSPARENT;
-        customRectangle.setFill(Color.TRANSPARENT);
 
         if(red.isSelected()) {
             currentColor = Color.RED;
+            customRectangle.setFill(Color.TRANSPARENT);
+
         }
         if(yellow.isSelected()) {
             currentColor = Color.YELLOW;
+            customRectangle.setFill(Color.TRANSPARENT);
+
         }
         if(blue.isSelected()) {
             currentColor = Color.BLUE;
+            customRectangle.setFill(Color.TRANSPARENT);
+
         }
 
         if(thin.isSelected()) {
@@ -173,7 +175,12 @@ public class RectangleDrawingGUI extends Application {
             customRectangle.setFill(currentColor);
         }
 
-        canvasGroup.getChildren().add(customRectangle);
+        anchorPane.getChildren().add(customRectangle);
+
+        clear.setOnAction(e->anchorPane.getChildren().remove(0, countRectangles));
+
+        System.out.println(countRectangles);
+
     }
 
     public void translateRectangle(MouseEvent event) {
@@ -186,17 +193,6 @@ public class RectangleDrawingGUI extends Application {
 
         customRectangle.setWidth(width);
         customRectangle.setHeight(height);
-    }
-
-    public void handleButton(ActionEvent event) {
-        System.out.println(event.getSource());
-    }
-
-    public void handleMouseClicks(MouseEvent event) {
-
-    }
-
-    public void handleMouseMotion(MouseEvent event) {
 
     }
 
