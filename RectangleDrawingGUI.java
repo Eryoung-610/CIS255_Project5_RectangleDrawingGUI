@@ -174,13 +174,19 @@ public class RectangleDrawingGUI extends Application {
         if(fillCheckBox.isSelected()) {
             customRectangle.setFill(currentColor);
         }
-
         anchorPane.getChildren().add(customRectangle);
-
-        clear.setOnAction(e->anchorPane.getChildren().remove(0, countRectangles));
-
-        System.out.println(countRectangles);
-
+        clear.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                try {
+                    anchorPane.getChildren().remove(0,countRectangles);
+                    countRectangles = 0;
+                }
+                catch(IndexOutOfBoundsException ex) {
+                    System.out.println("No Rectangles Created");
+                }
+            }
+        });
     }
 
     public void translateRectangle(MouseEvent event) {
