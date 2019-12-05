@@ -29,9 +29,9 @@ import javafx.scene.shape.*;
 
 public class RectangleDrawingGUI extends Application {
 
-    private static Rectangle customRectangle = null;
-    private double firstX = 0;
-    private double firstY = 0;
+    private static Rectangle rectangle;
+    private double xPos = 0;
+    private double yPos = 0;
     private RadioButton red,yellow,blue,thin,thick;
     private Button clear;
     private CheckBox fillCheckBox;
@@ -94,37 +94,37 @@ public class RectangleDrawingGUI extends Application {
 
 
 
-        HBox centerPane = new HBox();
+        HBox rectBox = new HBox();
 
-        centerPane.prefWidthProperty().bind(borderPane.widthProperty());
-        centerPane.prefHeightProperty().bind(borderPane.heightProperty());
+        rectBox.prefWidthProperty().bind(borderPane.widthProperty());
+        rectBox.prefHeightProperty().bind(borderPane.heightProperty());
 
         AnchorPane anchorPane = new AnchorPane();
 
-        anchorPane.prefWidthProperty().bind(centerPane.widthProperty());
-        anchorPane.prefHeightProperty().bind(centerPane.heightProperty());
+        anchorPane.prefWidthProperty().bind(rectBox.widthProperty());
+        anchorPane.prefHeightProperty().bind(rectBox.heightProperty());
 
 
-        centerPane.getChildren().add(anchorPane);
+        rectBox.getChildren().add(anchorPane);
 
-        centerPane.setStyle("-fx-background-color: white");
+        rectBox.setStyle("-fx-background-color: white");
 
-        borderPane.setCenter(centerPane);
+        borderPane.setCenter(rectBox);
 
-        centerPane.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
+        rectBox.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
 
                 if(event.getEventType() == MouseEvent.MOUSE_PRESSED) {
-                    firstX = event.getX();
-                    firstY = event.getY();
+                    xPos = event.getX();
+                    yPos = event.getY();
                     initializeRectangle(event, anchorPane);
 
                 }
                 if(event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
                     translateRectangle(event);
-                    firstX = event.getX();
-                    firstY = event.getY();
+                    xPos = event.getX();
+                    yPos = event.getY();
                 }
 
                 if(event.getEventType() == MouseEvent.MOUSE_RELEASED) {
@@ -140,41 +140,41 @@ public class RectangleDrawingGUI extends Application {
 
     }
     public void initializeRectangle(MouseEvent event, AnchorPane anchorPane) {
-        customRectangle = new Rectangle(0, 0, 0, 0); // or just set the actual X and Y from the start
-        customRectangle.relocate(event.getX(), event.getY());
+        rectangle = new Rectangle(0, 0, 0, 0);
+        rectangle.relocate(event.getX(), event.getY());
 
         Color currentColor = Color.TRANSPARENT;
 
         if(red.isSelected()) {
             currentColor = Color.RED;
-            customRectangle.setFill(Color.TRANSPARENT);
+            rectangle.setFill(Color.TRANSPARENT);
 
         }
         if(yellow.isSelected()) {
             currentColor = Color.YELLOW;
-            customRectangle.setFill(Color.TRANSPARENT);
+            rectangle.setFill(Color.TRANSPARENT);
 
         }
         if(blue.isSelected()) {
             currentColor = Color.BLUE;
-            customRectangle.setFill(Color.TRANSPARENT);
+            rectangle.setFill(Color.TRANSPARENT);
 
         }
 
         if(thin.isSelected()) {
-            customRectangle.setStroke(currentColor);
-            customRectangle.setStrokeWidth(1);
+            rectangle.setStroke(currentColor);
+            rectangle.setStrokeWidth(1);
         }
 
         if(thick.isSelected()) {
-            customRectangle.setStroke(currentColor);
-            customRectangle.setStrokeWidth(10);
+            rectangle.setStroke(currentColor);
+            rectangle.setStrokeWidth(10);
         }
 
         if(fillCheckBox.isSelected()) {
-            customRectangle.setFill(currentColor);
+            rectangle.setFill(currentColor);
         }
-        anchorPane.getChildren().add(customRectangle);
+        anchorPane.getChildren().add(rectangle);
         clear.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -191,14 +191,14 @@ public class RectangleDrawingGUI extends Application {
 
     public void translateRectangle(MouseEvent event) {
 
-        double deltaX = event.getX() - firstX;
-        double deltaY = event.getY() - firstY;
+        double rectWidth = event.getX() - xPos;
+        double rectHeight = event.getY() - yPos;
 
-        double width = customRectangle.getWidth() + deltaX;
-        double height = customRectangle.getHeight() + deltaY;
+        double width = rectangle.getWidth() + rectWidth;
+        double height = rectangle.getHeight() + rectHeight;
 
-        customRectangle.setWidth(width);
-        customRectangle.setHeight(height);
+        rectangle.setWidth(width);
+        rectangle.setHeight(height);
 
     }
 
