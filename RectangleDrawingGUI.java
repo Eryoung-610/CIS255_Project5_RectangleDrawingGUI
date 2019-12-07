@@ -121,11 +121,8 @@ public class RectangleDrawingGUI extends Application {
                     double currentX = event.getX();
                     double currentY = event.getY();
 
-                    translateRectangle(startingX, startingY, currentX, currentY, rectangle);
-
-
+                    translateRectangle(startingX, startingY, currentX, currentY);
                 }
-
                 if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
                     countRectangles++;
                 }
@@ -189,8 +186,7 @@ public class RectangleDrawingGUI extends Application {
         });
     }
 
-    public void translateRectangle(double startingX, double startingY, double endingX, double endingY,
-                                   Rectangle rectangle) {
+    public void translateRectangle(double startingX, double startingY, double endingX, double endingY) {
 
         if(endingX - startingX < 0) {
             rectangle.setTranslateX(endingX - startingX);
