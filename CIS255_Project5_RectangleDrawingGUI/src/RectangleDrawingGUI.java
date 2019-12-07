@@ -26,98 +26,185 @@ import javafx.scene.paint.*;
 import javafx.scene.shape.*;
 
 public class RectangleDrawingGUI extends Application {
-	
-	private RadioButton red,yellow,blue,thin,thick;
+
+	private static Rectangle rectangle;
+	private double startingX, startingY;
+	private RadioButton red, yellow, blue, thin, thick;
 	private Button clear;
 	private CheckBox fillCheckBox;
-	private final static int WIDTH = 500, HEIGHT = 500;
+	private int countRectangles = 0;
 
 	public void start(Stage stage) {
+
 		BorderPane borderPane = new BorderPane();
-		Canvas canvas = new Canvas(350,350);
+		Canvas canvas = new Canvas(350, 350);
 		canvas.setStyle("-fx-border-color : black");
 		Pane pane = new Pane();
 		pane.setStyle("-fx-border-color : black");
-		pane.setPadding(new Insets(10,10,10,10));
-		pane.setOnMouseMoved(this::handleMouseMotion);
-		
+		pane.setPadding(new Insets(10, 10, 10, 10));
+
 		borderPane.setCenter(pane);
-		
-		//COLOR BUTTONS
+
+		// COLOR BUTTONS
 		red = new RadioButton("Red");
-		red.setOnAction(this::handleButton);
 		yellow = new RadioButton("Yellow");
-		yellow.setOnAction(this::handleButton);
 		blue = new RadioButton("Blue");
-		blue.setOnAction(this::handleButton);
-		
-		//COLOR BUTTON TOGGLE GROUP
+
+		// COLOR BUTTON TOGGLE GROUP
 		ToggleGroup colorGroup = new ToggleGroup();
 		red.setToggleGroup(colorGroup);
 		yellow.setToggleGroup(colorGroup);
 		blue.setToggleGroup(colorGroup);
-		
-		//BORDER BUTTONS
+
+		// BORDER BUTTONS
 		thin = new RadioButton("Thin Border");
-		thin.setOnAction(this::handleButton);
 		thick = new RadioButton("Thick Border");
-		thick.setOnAction(this::handleButton);
-		
-		//BORDER BUTTON TOGGLE GROUP
+
+		// BORDER BUTTON TOGGLE GROUP
 		ToggleGroup borderGroup = new ToggleGroup();
 		thin.setToggleGroup(borderGroup);
 		thick.setToggleGroup(borderGroup);
-		
-		//FILLED IN BUTTON
-		fillCheckBox = new CheckBox("Fill");
-		fillCheckBox.setOnAction(this::handleButton);
-		
-		//Clear Button
-		clear = new Button("Clear");
-		clear.setOnAction(this::handleButton);
-		
-		//Color and width Groups
-		Group colorButtons = new Group();
-		colorButtons.getChildren().addAll(red,yellow,blue);
-		Group widthButtons = new Group();
-		widthButtons.getChildren().addAll(thin,thick);
-		
-		
-		//POSITION TESTING
-		HBox test = new HBox(red,yellow,blue,thin,thick,fillCheckBox,clear);
-		test.setAlignment(Pos.CENTER);
-		test.setPadding(new Insets(10,10,10,10));
-		test.setSpacing(10);
-		
-		HBox test1 = new HBox(clear);
-		test1.setAlignment(Pos.CENTER);
-		
-		
-		borderPane.setBottom(test);
-			
-		borderPane.getChildren().addAll(colorButtons);
-		
 
-		Scene scene = new Scene(borderPane, WIDTH, HEIGHT, Color.TRANSPARENT);
+		// FILLED IN BUTTON
+		fillCheckBox = new CheckBox("Fill");
+
+		// Clear Button
+		clear = new Button("Clear");
+
+		// Color and width Groups
+		Group colorButtons = new Group();
+		colorButtons.getChildren().addAll(red, yellow, blue);
+		Group widthButtons = new Group();
+		widthButtons.getChildren().addAll(thin, thick);
+
+		// POSITION TESTING
+		HBox box = new HBox(red, yellow, blue, thin, thick, fillCheckBox, clear);
+		box.setAlignment(Pos.CENTER);
+		box.setStyle("-fx-border-color : black");
+		box.setPadding(new Insets(10, 10, 10, 10));
+		box.setSpacing(10);
+
+		borderPane.setBottom(box);
+
+		borderPane.getChildren().addAll(colorButtons);
+
+		HBox centerPane = new HBox();
+		centerPane.setStyle("-fx-border-color : black");
+
+		centerPane.prefWidthProperty().bind(borderPane.widthProperty());
+		centerPane.prefHeightProperty().bind(borderPane.heightProperty());
+
+		AnchorPane anchorPane = new AnchorPane();
+		anchorPane.setStyle("-fx-border-color : black");
+		anchorPane.prefWidthProperty().bind(centerPane.widthProperty());
+		anchorPane.prefHeightProperty().bind(centerPane.heightProperty());
+
+		centerPane.getChildren().add(anchorPane);
+
+		centerPane.setStyle("-fx-background-color: white");
+
+		borderPane.setCenter(centerPane);
+
+		centerPane.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+
+				if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
+
+					initializeRectangle(event, anchorPane);
+
+				}
+				if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+					double currentX = event.getSceneX();
+					double currentY = event.getSceneY();
+
+					translateRectangle(startingX, startingY, currentX, currentY, rectangle);
+
+				
+				}
+
+				if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
+					countRectangles++;
+					System.out.println("RECTANGLE WIDTH " + rectangle.getWidth());
+					System.out.println("RECTANGLE HEIGHT " + rectangle.getHeight());
+				}
+			}
+		});
+
+		Scene scene = new Scene(borderPane, 600, 400);
 		stage.setTitle("Rectangles!");
 		stage.setScene(scene);
-		stage.setResizable(true);
 		stage.show();
 
 	}
-	
-	public void handleButton(ActionEvent event) {
-		
-	}
-	
-	public void handleMouseClicks(MouseEvent event) {
-		
-	}
-	
-	public void handleMouseMotion(MouseEvent event) {
-		
+
+	public void initializeRectangle(MouseEvent event, AnchorPane anchorPane) {
+
+		rectangle = new Rectangle(0,0,0,0); // or just set the actual X and Y from the start
+		rectangle.relocate(event.getX(), event.getY());
+
+		Color currentColor = Color.TRANSPARENT;
+
+		if (red.isSelected()) {
+			currentColor = Color.RED;
+			rectangle.setFill(Color.TRANSPARENT);
+
+		}
+		if (yellow.isSelected()) {
+			currentColor = Color.YELLOW;
+			rectangle.setFill(Color.TRANSPARENT);
+
+		}
+		if (blue.isSelected()) {
+			currentColor = Color.BLUE;
+			rectangle.setFill(Color.TRANSPARENT);
+
+		}
+
+		if (thin.isSelected()) {
+			rectangle.setStroke(currentColor);
+			rectangle.setStrokeWidth(1);
+		}
+
+		if (thick.isSelected()) {
+			rectangle.setStroke(currentColor);
+			rectangle.setStrokeWidth(10);
+		}
+
+		if (fillCheckBox.isSelected()) {
+			rectangle.setFill(currentColor);
+		}
+		anchorPane.getChildren().add(rectangle);
+		clear.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				try {
+					anchorPane.getChildren().remove(0, countRectangles);
+					countRectangles = 0;
+				} catch (IndexOutOfBoundsException ex) {
+					System.out.println("No Rectangles Created");
+				}
+			}
+		});
 	}
 
+	public void translateRectangle(double startingX, double startingY, double endingX, double endingY,
+			Rectangle rectangle) {
+		rectangle.setX(startingX);
+		rectangle.setY(startingY);
+		rectangle.setWidth(endingX - startingX);
+		rectangle.setHeight(endingY - startingY);
+
+		if (rectangle.getWidth() < 0) {
+			rectangle.setWidth(-rectangle.getWidth());
+			rectangle.setX(rectangle.getX() - rectangle.getWidth());
+		}
+
+		if (rectangle.getHeight() < 0) {
+			rectangle.setHeight(-rectangle.getHeight());
+			rectangle.setY(rectangle.getY() - rectangle.getHeight());
+		}
+	}
 
 	public static void main(String[] args) {
 		launch(args);
